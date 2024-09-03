@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS appUser(
     role TEXT,
     address TEXT,
     activated BOOLEAN,
-    createdAt TIMESTAMP
+    createdAt TIMESTAMP DEFAULT NOW()
 );
