@@ -7,7 +7,9 @@ public sealed class User permits Seller, Bidder {
     private String name;
     private String email;
     private String password;
-    private String phone;    
+    private String phone;
+    private Role role;
+    private String address;
     private boolean activated;
     private Instant createdAt;
 
@@ -51,6 +53,22 @@ public sealed class User permits Seller, Bidder {
         this.phone = phone;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public boolean isActivated() {
         return activated;
     }
@@ -67,4 +85,9 @@ public sealed class User permits Seller, Bidder {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", phone=" + phone
+                + ", activated=" + activated + ", createdAt=" + createdAt + "]";
+    }
 }

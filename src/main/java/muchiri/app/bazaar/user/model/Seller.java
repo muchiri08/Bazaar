@@ -1,14 +1,8 @@
 package muchiri.app.bazaar.user.model;
 
 public final class Seller extends User {
-    private String address;
-
-    public String getAddress() {
-        return address;
+    @Override
+    public String toString() {
+        return super.toString();
     }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
 }
