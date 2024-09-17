@@ -16,7 +16,6 @@ public sealed class User permits Seller, Bidder {
     @NotBlank(message = "phone is required")
     private String phone;
     private Role role;
-    private String address;
     private boolean activated;
     private Instant createdAt;
 
@@ -66,14 +65,6 @@ public sealed class User permits Seller, Bidder {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public boolean isActivated() {
