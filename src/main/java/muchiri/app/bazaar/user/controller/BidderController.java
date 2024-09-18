@@ -23,7 +23,7 @@ public class BidderController {
     public Response newBidder(@Valid Bidder bidder) {
         var newBidder = userService.newBidder(bidder);
         var status = Status.ACCEPTED.getStatusCode();
-        var response = new APIResponse<Bidder>(status, "success");
+        var response = new APIResponse(status, "success");
 
         //TODO: Send Activation Email
 

@@ -37,9 +37,9 @@
             <artifactId>quarkus-hibernate-validator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.sql2o</groupId>
-            <artifactId>sql2o</artifactId>
-            <version>1.8.0</version>
+            <groupId>io.quarkiverse.jdbi</groupId>
+            <artifactId>quarkus-jdbi</artifactId>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

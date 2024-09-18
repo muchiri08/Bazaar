@@ -1,19 +1,21 @@
 package muchiri.app.bazaar;
 
-import org.sql2o.Sql2o;
+import org.jdbi.v3.core.Jdbi;
 
 import io.agroal.api.AgroalDataSource;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.ext.Provider;
 
-@ApplicationScoped
+@Provider
 public class AppConfig {
     @Inject
     private AgroalDataSource ds;
 
+    @Singleton
     @Produces
-    public Sql2o sql2o() {
-        return new Sql2o(ds);
+    public Jdbi jdbi() {
+        return Jdbi.create(ds);
     }
 }

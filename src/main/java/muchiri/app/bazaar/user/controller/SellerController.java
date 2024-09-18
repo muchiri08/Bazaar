@@ -23,7 +23,7 @@ public class SellerController {
     public Response newSeller(@Valid Seller seller) {
         var newSeller = userService.newSeller(seller);
         var status = Status.ACCEPTED.getStatusCode();
-        var response = new APIResponse<Seller>(status, "success");
+        var response = new APIResponse(status, "success");
 
         // TODO: Send Activation Email
 
