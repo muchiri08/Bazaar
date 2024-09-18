@@ -1,5 +1,7 @@
 package muchiri.app.bazaar.user.controller;
 
+import java.util.concurrent.ExecutorService;
+import io.quarkus.virtual.threads.VirtualThreads;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.POST;
@@ -9,6 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import muchiri.app.bazaar.APIResponse;
+import muchiri.app.bazaar.mailer.Mailer;
 import muchiri.app.bazaar.user.model.Bidder;
 import muchiri.app.bazaar.user.service.UserService;
 
@@ -17,6 +20,11 @@ import muchiri.app.bazaar.user.service.UserService;
 public class BidderController {
     @Inject
     UserService userService;
+    @Inject
+    Mailer mailer;
+    @Inject
+    @VirtualThreads
+    ExecutorService executorService;
 
     @POST
     @Path("new")
@@ -25,8 +33,12 @@ public class BidderController {
         var status = Status.ACCEPTED.getStatusCode();
         var response = new APIResponse(status, "success");
 
-        //TODO: Send Activation Email
+        // TODO: Generate Activation Token
 
+        executorService.submit(() -> {
+            mailer.sendEmail(newBidder.getName(), newBidder.getEmail(), "SOMETOKEN");
+
+        });
         return Response.status(status).entity(response).build();
     }
 }
