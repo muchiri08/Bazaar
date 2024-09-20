@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS token(
+    hash TEXT PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    expiry TIMESTAMP NOT NULL
+);

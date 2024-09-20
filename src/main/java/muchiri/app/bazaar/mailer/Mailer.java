@@ -11,7 +11,7 @@ public class Mailer {
     io.quarkus.mailer.Mailer mailer;
 
     public void sendEmail(String name, String email, String token) {
-        System.out.println("sending welcome email");
+        System.out.println("sending welcome email to %s".formatted(email));
         var template = template(name, token);
         mailer.send(
                 Mail.withHtml(email, "Welcome to Bazaar", template));
