@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public sealed class User permits Seller, Bidder {
     private long id;
+    @NotBlank(message = "username is required")
+    private String username;
     @NotBlank(message = "name is required")
     private String name;
     @Email(message = "email is invalid")
@@ -25,6 +27,14 @@ public sealed class User permits Seller, Bidder {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {

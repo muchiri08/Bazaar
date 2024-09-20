@@ -20,8 +20,8 @@ public class UserService {
     public Bidder newBidder(Bidder bidder) {
         bidder.setRole(Role.BIDDER);
         var query = """
-                INSERT INTO appUser(name, email, passwordHash, phone, role, activated, createdAt)
-                VALUES(:name, :email, :password, :phone, :role, FALSE, NOW());
+                INSERT INTO appUser(username, name, email, passwordHash, phone, role, activated, createdAt)
+                VALUES(:username, :name, :email, :password, :phone, :role, FALSE, NOW());
                 """;
         try {
             jdbi.useHandle(handle -> {
@@ -46,9 +46,9 @@ public class UserService {
     public Seller newSeller(Seller seller) {
         seller.setRole(Role.SELLER);
         var query = """
-                INSERT INTO appUser(name, email, passwordHash, phone, role, address,
+                INSERT INTO appUser(username, name, email, passwordHash, phone, role, address,
                 activated, createdAt)
-                VALUES(:name, :email, :password, :phone, :role, :address, FALSE, NOW());
+                VALUES(:username, :name, :email, :password, :phone, :role, :address, FALSE, NOW());
                 """;
         try {
             jdbi.useHandle(handle -> {
@@ -71,9 +71,14 @@ public class UserService {
     }
 
     private void handleUniqueConstraintViolation(String message) {
-        if (message.contains("appuser_name_key")) {
-            throw new UserException("user with that name already exists");
+        if (message.contains("appuser_username_key")) {
+            throw new UserException("username already exists");
         }
-        // more columns to come
+        if (message.contains("appuser_phone_key")) {
+            throw new UserException("phone number already exists");
+        }
+        if (message.contains("appuser_email_key")) {
+            throw new UserException("email already exists");
+        }
     }
 }
