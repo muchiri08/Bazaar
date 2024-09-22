@@ -2,6 +2,7 @@ package muchiri.app.bazaar.user.controller;
 
 import java.util.concurrent.ExecutorService;
 import io.quarkus.virtual.threads.VirtualThreads;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.POST;
@@ -17,6 +18,7 @@ import muchiri.app.bazaar.user.service.TokenService;
 import muchiri.app.bazaar.user.service.UserService;
 
 @Path("bidders")
+@RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 public class BidderController {
     @Inject
