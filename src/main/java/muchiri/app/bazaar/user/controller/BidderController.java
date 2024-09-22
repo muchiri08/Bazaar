@@ -36,7 +36,7 @@ public class BidderController {
     public Response newBidder(@Valid Bidder bidder) {
         var newBidder = userService.newBidder(bidder);
         var status = Status.ACCEPTED.getStatusCode();
-        var response = new APIResponse(status, "success");
+        var response = new APIResponse(status, "accepted");
 
         var token = tokenService.generateToken(newBidder.getId());
         tokenService.insert(token);

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS product(
     type TEXT NOT NULL,
     url TEXT NOT NULL,
     startingBid NUMERIC(10, 2) NOT NULL,
-    auctioStartTime TIMESTAMP NOT NULL,
+    auctionStartTime TIMESTAMP NOT NULL,
     auctionEndTime TIMESTAMP NOT NULL,
     status TEXT NOT NULL,
     isListed BOOLEAN,

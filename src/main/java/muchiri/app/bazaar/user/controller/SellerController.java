@@ -37,7 +37,7 @@ public class SellerController {
     public Response newSeller(@Valid Seller seller) {
         var newSeller = userService.newSeller(seller);
         var status = Status.ACCEPTED.getStatusCode();
-        var response = new APIResponse(status, "success");
+        var response = new APIResponse(status, "accepted");
 
         var token = tokenService.generateToken(newSeller.getId());
         tokenService.insert(token);
