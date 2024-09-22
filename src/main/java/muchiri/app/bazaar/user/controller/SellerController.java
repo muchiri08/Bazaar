@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.Response.Status;
 import muchiri.app.bazaar.APIResponse;
 import muchiri.app.bazaar.mailer.Mailer;
 import muchiri.app.bazaar.user.model.Seller;
+import muchiri.app.bazaar.user.service.TokenService;
 import muchiri.app.bazaar.user.service.UserService;
 
 @Path("sellers")
@@ -26,6 +27,8 @@ public class SellerController {
     @Inject
     @VirtualThreads
     ExecutorService executorService;
+    @Inject
+    TokenService tokenService;
 
     @POST
     @Path("new")
@@ -34,10 +37,11 @@ public class SellerController {
         var status = Status.ACCEPTED.getStatusCode();
         var response = new APIResponse(status, "success");
 
-        // TODO: Generate Activation Token
+        var token = tokenService.generateToken(newSeller.getId());
+        tokenService.insert(token);
 
         executorService.submit(() -> {
-            mailer.sendEmail(newSeller.getName(), newSeller.getEmail(), "SOMETOKEN");
+            mailer.sendEmail(newSeller.getName(), newSeller.getEmail(), token.getPlain());
 
         });
 
