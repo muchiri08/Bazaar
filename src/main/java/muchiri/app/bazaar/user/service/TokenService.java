@@ -7,6 +7,8 @@ import org.jdbi.v3.core.Jdbi;
 
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
+import muchiri.app.bazaar.user.TokenExpiredException;
+import muchiri.app.bazaar.user.TokenNotFoudException;
 import muchiri.app.bazaar.user.model.Token;
 
 import java.security.MessageDigest;
@@ -20,6 +22,27 @@ public class TokenService {
 
     @Inject
     private Jdbi jdbi;
+
+    public long verifyToken(String plainToken) {
+        var hash = hash(plainToken);
+        var query = "SELECT userId, expiry FROM token WHERE hash = :hash";
+        try (var handle = jdbi.open()) {
+            var tokenOptional = handle.select(query, hash)
+                    .bind("hash", hash)
+                    .map((rs, ctx) -> new Token(
+                            rs.getLong("userId"),
+                            rs.getTimestamp("expiry").toInstant()))
+                    .findOne();
+            var token = tokenOptional.orElseThrow(
+                    () -> new TokenNotFoudException("token does not exist"));
+            if (Instant.now().isAfter(token.getExpiry())) {
+                deleteToken(hash);
+                throw new TokenExpiredException("token is expired");
+            }
+            deleteToken(hash);
+            return token.getUserId();
+        }
+    }
 
     public void insert(Token token) {
         var query = "INSERT INTO token(hash, userId, expiry) VALUES (:hash, :userId, :expiry)";
@@ -43,6 +66,13 @@ public class TokenService {
         var hashedToken = hash(plainToken);
         token.setHash(hashedToken);
         return token;
+    }
+
+    private void deleteToken(byte[] hash) {
+        var query = "DELETE FROM token WHERE hash = :hash";
+        jdbi.useHandle(handle -> {
+            handle.createUpdate(query).bind("hash", hash).execute();
+        });
     }
 
     private byte[] hash(String token) {

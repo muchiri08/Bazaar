@@ -8,6 +8,14 @@ public class Token {
     private byte[] hash;
     private Instant expiry;
 
+    public Token() {
+    }
+
+    public Token(long userId, Instant expiry) {
+        this.userId = userId;
+        this.expiry = expiry;
+    }
+
     public long getUserId() {
         return userId;
     }

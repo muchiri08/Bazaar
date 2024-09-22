@@ -17,6 +17,12 @@ public class UserService {
     @Inject
     private Jdbi jdbi;
 
+    public void activateUser(long userId) {
+        jdbi.useHandle(handle -> {
+            handle.execute("UPDATE appUser SET activated = TRUE WHERE id = ?", userId);
+        });
+    }
+
     public Bidder newBidder(Bidder bidder) {
         bidder.setRole(Role.BIDDER);
         var query = """
