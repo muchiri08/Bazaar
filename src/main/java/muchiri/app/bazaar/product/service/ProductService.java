@@ -2,8 +2,10 @@ package muchiri.app.bazaar.product.service;
 
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.JdbiException;
+import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,6 +16,16 @@ import muchiri.app.bazaar.product.model.Product;
 public class ProductService {
     @Inject
     private Jdbi jdbi;
+
+    public Optional<Product> getProductById(long id) {
+        var query = """
+                SELECT id, sellerId, name, description, type, url, startingBid,
+                auctionStartTime, auctionEndTime, status, isListed AS listed, pickupLocation
+                FROM product WHERE id = :id
+                """;
+        return jdbi.withHandle(
+                handle -> handle.createQuery(query).bind("id", id).map(BeanMapper.of(Product.class)).findOne());
+    }
 
     public void newProduct(Product product) {
         var query = """

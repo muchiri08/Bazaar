@@ -41,7 +41,7 @@ public class Product {
         this.id = id;
     }
 
-    public long getSellerId() {
+    public Long getSellerId() {
         return sellerId;
     }
 
@@ -113,12 +113,12 @@ public class Product {
         this.status = status;
     }
 
-    public boolean isListed() {
+    public Boolean isListed() {
         return isListed;
     }
 
-    //Added this since the above could not be recognized by jdbi
-    public boolean getIsListed() {
+    // Added this since the above could not be recognized by jdbi
+    public Boolean getIsListed() {
         return isListed;
     }
 
