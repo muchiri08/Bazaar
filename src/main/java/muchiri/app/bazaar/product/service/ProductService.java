@@ -5,6 +5,7 @@ import org.jdbi.v3.core.JdbiException;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +17,22 @@ import muchiri.app.bazaar.product.model.Product;
 public class ProductService {
     @Inject
     private Jdbi jdbi;
+
+    public List<Product> getProductsBySellerId(long sellerId, int page, int pageSize) {
+        var query = """
+                SELECT id, name, description, type, url, startingBid, auctionStartTime,
+                auctionEndTime, status, isListed, pickupLocation FROM product
+                WHERE sellerId = :sellerId ORDER BY id DESC LIMIT :limit OFFSET :offset
+                """;
+        var offset = (page - 1) * pageSize;
+        return jdbi.withHandle(
+                handle -> handle.select(query)
+                        .bind("sellerId", sellerId)
+                        .bind("limit", pageSize)
+                        .bind("offset", offset)
+                        .mapToBean(Product.class)
+                        .list());
+    }
 
     public Optional<Product> getProductById(long id) {
         var query = """
