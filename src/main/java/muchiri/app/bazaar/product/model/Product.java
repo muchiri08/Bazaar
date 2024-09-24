@@ -3,7 +3,9 @@ package muchiri.app.bazaar.product.model;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +33,7 @@ public class Product {
     private Boolean isListed;
     @NotBlank(message = "pickup location is required")
     private String pickupLocation;
+    @JsonInclude(value = Include.NON_NULL)
     private Instant createdAt;
 
     public long getId() {
@@ -113,16 +116,11 @@ public class Product {
         this.status = status;
     }
 
-    public Boolean isListed() {
-        return isListed;
-    }
-
-    // Added this since the above could not be recognized by jdbi
     public Boolean getIsListed() {
         return isListed;
     }
 
-    public void setListed(Boolean isListed) {
+    public void setIsListed(Boolean isListed) {
         this.isListed = isListed;
     }
 

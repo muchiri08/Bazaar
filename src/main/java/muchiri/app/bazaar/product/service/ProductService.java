@@ -20,7 +20,7 @@ public class ProductService {
     public Optional<Product> getProductById(long id) {
         var query = """
                 SELECT id, sellerId, name, description, type, url, startingBid,
-                auctionStartTime, auctionEndTime, status, isListed AS listed, pickupLocation
+                auctionStartTime, auctionEndTime, status, isListed, pickupLocation
                 FROM product WHERE id = :id
                 """;
         return jdbi.withHandle(
