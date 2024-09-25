@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -14,7 +15,9 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import muchiri.app.bazaar.APIResponse;
+import muchiri.app.bazaar.product.ProductMapper;
 import muchiri.app.bazaar.product.model.Product;
+import muchiri.app.bazaar.product.model.ProductResource;
 import muchiri.app.bazaar.product.model.Status;
 import muchiri.app.bazaar.product.service.ProductService;
 import muchiri.app.bazaar.user.service.UserService;
@@ -41,8 +44,8 @@ public class ProductController {
     public Response getProductById(@PathParam("id") Long id) {
         var product = productService.getProductById(id).orElseThrow(
                 () -> new WebApplicationException(
-                        Response.status(400)
-                                .entity(new APIResponse(400, "product with id %d does not exist".formatted(id)))
+                        Response.status(404)
+                                .entity(new APIResponse(404, "product with id %d does not exist".formatted(id)))
                                 .build()));
         return Response.ok(product).build();
     }
@@ -61,5 +64,19 @@ public class ProductController {
         }
         var products = productService.getProductsBySellerId(sellerId, page, pageSize);
         return Response.ok().entity(products).build();
+    }
+
+    @PUT
+    @Path("edit/{id}")
+    public Response updateProduct(@Valid ProductResource resource, @PathParam("id") Long id) {
+        var product = productService.getProductById(id).orElseThrow(
+                () -> new WebApplicationException(
+                        Response.status(404)
+                                .entity(new APIResponse(404, "product with id %d does not exist".formatted(id)))
+                                .build()));
+        product = ProductMapper.toProduct(resource);
+        product.setId(id);
+        productService.updateProduct(product);
+        return Response.ok().entity(new APIResponse(200, "success")).build();
     }
 }

@@ -18,6 +18,17 @@ public class ProductService {
     @Inject
     private Jdbi jdbi;
 
+    public void updateProduct(Product product) {
+        var query = """
+                UPDATE product SET name = :name, description = :description, type = :type,
+                startingBid = :startingBid, auctionStartTime = :auctionStartTime,
+                auctionEndTime = :auctionEndTime, pickupLocation = :pickupLocation
+                WHERE id = :id
+                """;
+        jdbi.useHandle(
+                handle -> handle.createUpdate(query).bindBean(product).execute());
+    }
+
     public List<Product> getProductsBySellerId(long sellerId, int page, int pageSize) {
         var query = """
                 SELECT id, name, description, type, url, startingBid, auctionStartTime,
@@ -35,6 +46,9 @@ public class ProductService {
     }
 
     public Optional<Product> getProductById(long id) {
+        if (id < 1) {
+            return Optional.empty();
+        }
         var query = """
                 SELECT id, sellerId, name, description, type, url, startingBid,
                 auctionStartTime, auctionEndTime, status, isListed, pickupLocation
