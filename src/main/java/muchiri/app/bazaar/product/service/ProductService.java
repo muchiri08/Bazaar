@@ -13,11 +13,26 @@ import jakarta.inject.Inject;
 import muchiri.app.bazaar.product.ProductException;
 import muchiri.app.bazaar.product.ProductNotExistException;
 import muchiri.app.bazaar.product.model.Product;
+import muchiri.app.bazaar.product.model.Status;
 
 @ApplicationScoped
 public class ProductService {
     @Inject
     private Jdbi jdbi;
+
+    public void listProduct(long id) {
+        if (id < 1) {
+            throw new ProductNotExistException("product with id %d does not exist".formatted(id));
+        }
+        var query = "UPDATE product SET isListed = TRUE, status = ? WHERE id = ?";
+        jdbi.useHandle(
+                handle -> {
+                    var rows = handle.execute(query, Status.ACTIVE, id);
+                    if (rows == 0) {
+                        throw new ProductNotExistException("product with id %d does not exist".formatted(id));
+                    }
+                });
+    }
 
     public void deleteProduct(long id) {
         if (id < 1) {

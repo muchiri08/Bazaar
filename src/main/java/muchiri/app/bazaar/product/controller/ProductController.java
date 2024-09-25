@@ -82,4 +82,11 @@ public class ProductController {
         productService.deleteProduct(id);
         return Response.ok().entity(new APIResponse(200, "success")).build();
     }
+
+    @PUT
+    @Path("list/{id}")
+    public Response listProduct(@PathParam("id") Long id) {
+        productService.listProduct(id);
+        return Response.ok().entity(new APIResponse(200, "success")).build();
+    }
 }
