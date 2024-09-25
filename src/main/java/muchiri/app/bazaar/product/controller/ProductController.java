@@ -3,6 +3,7 @@ package muchiri.app.bazaar.product.controller;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -16,6 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import muchiri.app.bazaar.APIResponse;
 import muchiri.app.bazaar.product.ProductMapper;
+import muchiri.app.bazaar.product.ProductNotExistException;
 import muchiri.app.bazaar.product.model.Product;
 import muchiri.app.bazaar.product.model.ProductResource;
 import muchiri.app.bazaar.product.model.Status;
@@ -43,10 +45,7 @@ public class ProductController {
     @Path("{id}")
     public Response getProductById(@PathParam("id") Long id) {
         var product = productService.getProductById(id).orElseThrow(
-                () -> new WebApplicationException(
-                        Response.status(404)
-                                .entity(new APIResponse(404, "product with id %d does not exist".formatted(id)))
-                                .build()));
+                () -> new ProductNotExistException("product with id %d does not exist".formatted(id)));
         return Response.ok(product).build();
     }
 
@@ -70,13 +69,17 @@ public class ProductController {
     @Path("edit/{id}")
     public Response updateProduct(@Valid ProductResource resource, @PathParam("id") Long id) {
         productService.getProductById(id).orElseThrow(
-                () -> new WebApplicationException(
-                        Response.status(404)
-                                .entity(new APIResponse(404, "product with id %d does not exist".formatted(id)))
-                                .build()));
+                () -> new ProductNotExistException("product with id %d does not exist".formatted(id)));
         var product = ProductMapper.toProduct(resource);
         product.setId(id);
         productService.updateProduct(product);
+        return Response.ok().entity(new APIResponse(200, "success")).build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    public Response deleteProduct(@PathParam("id") Long id) {
+        productService.deleteProduct(id);
         return Response.ok().entity(new APIResponse(200, "success")).build();
     }
 }

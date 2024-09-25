@@ -11,12 +11,25 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import muchiri.app.bazaar.product.ProductException;
+import muchiri.app.bazaar.product.ProductNotExistException;
 import muchiri.app.bazaar.product.model.Product;
 
 @ApplicationScoped
 public class ProductService {
     @Inject
     private Jdbi jdbi;
+
+    public void deleteProduct(long id) {
+        if (id < 1) {
+            throw new ProductNotExistException("product with id %d does not exist".formatted(id));
+        }
+        jdbi.useHandle(handle -> {
+            var rows = handle.execute("DELETE FROM product WHERE id = ?", id);
+            if (rows == 0) {
+                throw new ProductNotExistException("product with id %d does not exist".formatted(id));
+            }
+        });
+    }
 
     public void updateProduct(Product product) {
         var query = """
