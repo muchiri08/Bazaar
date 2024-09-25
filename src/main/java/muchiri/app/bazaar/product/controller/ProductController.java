@@ -69,12 +69,12 @@ public class ProductController {
     @PUT
     @Path("edit/{id}")
     public Response updateProduct(@Valid ProductResource resource, @PathParam("id") Long id) {
-        var product = productService.getProductById(id).orElseThrow(
+        productService.getProductById(id).orElseThrow(
                 () -> new WebApplicationException(
                         Response.status(404)
                                 .entity(new APIResponse(404, "product with id %d does not exist".formatted(id)))
                                 .build()));
-        product = ProductMapper.toProduct(resource);
+        var product = ProductMapper.toProduct(resource);
         product.setId(id);
         productService.updateProduct(product);
         return Response.ok().entity(new APIResponse(200, "success")).build();
