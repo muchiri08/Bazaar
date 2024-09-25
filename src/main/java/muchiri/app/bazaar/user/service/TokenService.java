@@ -25,10 +25,9 @@ public class TokenService {
 
     public long verifyToken(String plainToken) {
         var hash = hash(plainToken);
-        var query = "SELECT userId, expiry FROM token WHERE hash = :hash";
+        var query = "SELECT userId, expiry FROM token WHERE hash = ?";
         try (var handle = jdbi.open()) {
             var tokenOptional = handle.select(query, hash)
-                    .bind("hash", hash)
                     .map((rs, ctx) -> new Token(
                             rs.getLong("userId"),
                             rs.getTimestamp("expiry").toInstant()))

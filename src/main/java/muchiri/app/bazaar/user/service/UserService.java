@@ -1,6 +1,7 @@
 package muchiri.app.bazaar.user.service;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.JdbiException;
@@ -11,11 +12,20 @@ import muchiri.app.bazaar.user.UserException;
 import muchiri.app.bazaar.user.model.Bidder;
 import muchiri.app.bazaar.user.model.Role;
 import muchiri.app.bazaar.user.model.Seller;
+import muchiri.app.bazaar.user.model.User;
 
 @ApplicationScoped
 public class UserService {
     @Inject
     private Jdbi jdbi;
+
+    public Optional<Seller> getSellerById(long id) {
+        if (id < 1) {
+            return Optional.empty();
+        }
+        var seller = (Seller) getUserById(id, Role.SELLER);
+        return Optional.ofNullable(seller);
+    }
 
     public void activateUser(long userId) {
         jdbi.useHandle(handle -> {
@@ -74,6 +84,17 @@ public class UserService {
             throw new RuntimeException(e);
         }
         return seller;
+    }
+
+    private User getUserById(long id, Role role) {
+        return switch (role) {
+            case SELLER -> jdbi.withHandle(
+                    handle -> handle.select("SELECT * FROM appUser WHERE id = ?", id).mapToBean(Seller.class)
+                            .findFirst().orElse(null));
+            case BIDDER -> jdbi.withHandle(
+                    handle -> handle.select("SELECT * FROM appUser WHERE id = ?", id).mapToBean(Bidder.class)
+                            .findFirst().orElse(null));
+        };
     }
 
     private void handleUniqueConstraintViolation(String message) {

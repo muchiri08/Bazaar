@@ -17,6 +17,7 @@ import muchiri.app.bazaar.APIResponse;
 import muchiri.app.bazaar.product.model.Product;
 import muchiri.app.bazaar.product.model.Status;
 import muchiri.app.bazaar.product.service.ProductService;
+import muchiri.app.bazaar.user.service.UserService;
 
 @Path("products")
 @RequestScoped
@@ -24,6 +25,8 @@ import muchiri.app.bazaar.product.service.ProductService;
 public class ProductController {
     @Inject
     ProductService productService;
+    @Inject
+    UserService userService;
 
     @POST
     @Path("new")
@@ -49,6 +52,13 @@ public class ProductController {
     public Response getProductsForSeller(@PathParam("sellerId") Long sellerId,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+        var seller = userService.getSellerById(sellerId);
+        if (seller.isEmpty()) {
+            throw new WebApplicationException(
+                    Response.status(404)
+                            .entity(new APIResponse(404, "seller with id %d does not exist".formatted(sellerId)))
+                            .build());
+        }
         var products = productService.getProductsBySellerId(sellerId, page, pageSize);
         return Response.ok().entity(products).build();
     }
