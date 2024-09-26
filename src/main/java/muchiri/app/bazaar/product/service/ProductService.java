@@ -20,6 +20,35 @@ public class ProductService {
     @Inject
     private Jdbi jdbi;
 
+    public List<Product> getPendingProducts(Long sellerId) {
+        var queryBuilder = new StringBuilder(
+                """
+                        SELECT id, sellerId, name, description, type, url, startingBid,
+                        auctionStartTime, auctionEndTime, status, isListed, pickupLocation
+                        FROM product WHERE status = :status
+                        """);
+        if (sellerId != null) {
+            queryBuilder.append(" AND sellerId = :sellerId");
+        }
+        var query = queryBuilder.toString();
+        try (var handle = jdbi.open()) {
+            var handleQuery = handle.createQuery(query).bind("status", Status.PENDNG);
+            if (sellerId != null) {
+                handleQuery.bind("sellerId", sellerId);
+            }
+            return handleQuery.mapToBean(Product.class).list();
+        }
+    }
+
+    public void statusToPending(Long productId) {
+        if (productId < 1) {
+            throw new ProductNotExistException("product with id %d does not exist".formatted(productId));
+        }
+        var query = "UPDATE product SET status = ? WHERE id = ?";
+        jdbi.useHandle(
+                handle -> handle.execute(query, Status.PENDNG, productId));
+    }
+
     public void listProduct(long id) {
         if (id < 1) {
             throw new ProductNotExistException("product with id %d does not exist".formatted(id));
