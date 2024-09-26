@@ -2,6 +2,7 @@ package muchiri.app.bazaar.product.controller;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -19,6 +20,13 @@ import muchiri.app.bazaar.product.service.ProductService;
 public class MarketController {
     @Inject
     ProductService productService;
+
+    @GET
+    public Response getListedAndActiveProducts(@QueryParam("page") @DefaultValue("1") int page,
+            @QueryParam("pageSize") @DefaultValue("20") int pageSize) {
+        var products = productService.getListedAndActiveProduct(page, pageSize);
+        return Response.ok(products).build();
+    }
 
     @POST
     @Path("{id}")

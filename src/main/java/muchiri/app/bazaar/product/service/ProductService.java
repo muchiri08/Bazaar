@@ -20,6 +20,23 @@ public class ProductService {
     @Inject
     private Jdbi jdbi;
 
+    public List<Product> getListedAndActiveProduct(int page, int pageSize) {
+        var query = """
+                SELECT id, name, description, type, url, startingBid, auctionStartTime,
+                auctionEndTime, status, isListed, pickupLocation FROM product
+                WHERE isListed = TRUE AND status = :status ORDER BY id DESC
+                LIMIT :limit OFFSET :offset
+                """;
+        int offset = (page - 1) * pageSize;
+        return jdbi.withHandle(
+                handle -> handle.select(query)
+                        .bind("status", Status.ACTIVE)
+                        .bind("limit", pageSize)
+                        .bind("offset", offset)
+                        .mapToBean(Product.class)
+                        .list());
+    }
+
     public List<Product> getPendingProducts(Long sellerId) {
         var queryBuilder = new StringBuilder(
                 """
