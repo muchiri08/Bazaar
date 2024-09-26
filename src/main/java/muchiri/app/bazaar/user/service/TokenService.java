@@ -45,7 +45,6 @@ public class TokenService {
 
     public void insert(Token token) {
         var query = "INSERT INTO token(hash, userId, expiry) VALUES (:hash, :userId, :expiry)";
-        token.setExpiry(Instant.now().plus(Duration.ofHours(72)));
         jdbi.useHandle(handle -> {
             handle.createUpdate(query).bindBean(token).execute();
         });
@@ -64,6 +63,8 @@ public class TokenService {
 
         var hashedToken = hash(plainToken);
         token.setHash(hashedToken);
+
+        token.setExpiry(Instant.now().plus(Duration.ofHours(72)));
         return token;
     }
 
