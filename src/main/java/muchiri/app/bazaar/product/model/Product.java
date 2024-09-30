@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 public class Product {
     private long id;
     @NotNull(message = "seller id is required")
+    @JsonInclude(value = Include.NON_NULL)
     private Long sellerId;
     @NotBlank(message = "product name is required")
     private String name;
