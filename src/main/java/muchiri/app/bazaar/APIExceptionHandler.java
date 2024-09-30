@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import muchiri.app.bazaar.bid.BidException;
 import muchiri.app.bazaar.product.ProductException;
 import muchiri.app.bazaar.product.ProductNotExistException;
 import muchiri.app.bazaar.user.TokenExpiredException;
@@ -24,6 +25,7 @@ public class APIExceptionHandler implements ExceptionMapper<Throwable> {
             case TokenNotFoudException e -> Response.status(404).entity(new APIResponse(404, e.getMessage())).build();
             case ProductException e -> Response.status(422).entity(new APIResponse(422, e.getMessage())).build();
             case ProductNotExistException e -> Response.status(404).entity(new APIResponse(404, e.getMessage())).build();
+            case BidException e -> Response.status(422).entity(new APIResponse(422, e.getMessage())).build();
             case NotFoundException e -> Response.status(Status.NOT_FOUND).build();
             case NotAllowedException e -> Response.status(Status.METHOD_NOT_ALLOWED).build();
             default -> {
