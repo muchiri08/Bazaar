@@ -58,5 +58,4 @@ public class Bid {
     public void setVersion(short version) {
         this.version = version;
     }
-
 }
