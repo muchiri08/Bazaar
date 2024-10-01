@@ -12,18 +12,27 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import muchiri.app.bazaar.bid.BidException;
 import muchiri.app.bazaar.bid.model.Bid;
+import muchiri.app.bazaar.bid.model.BidDTO;
 
 @ApplicationScoped
 public class BidService {
     @Inject
     private Jdbi jdbi;
 
-    public List<Bid> getBidsForProduct(long productId) {
+    public List<BidDTO> getBidsForProduct(long productId) {
         var query = """
-                SELECT id, bidderId, productId, bidAmount, updatedAt FROM bid
-                WHERE productId = :productId;
+                SELECT bid.id, appUser.username, bid.bidAmount, bid.updatedAt FROM bid
+                JOIN appUser ON bid.bidderId = appUser.id
+                WHERE productId = :productId ORDER BY id DESC;
                 """;
-        return jdbi.withHandle(handle -> handle.createQuery(query).bind("productId", productId).mapToBean(Bid.class).list());
+        return jdbi.withHandle(
+                handle -> handle.createQuery(query)
+                        .bind("productId", productId)
+                        .map((rs, ctx) -> new BidDTO(
+                                rs.getLong("id"),
+                                rs.getString("username"), rs.getBigDecimal("bidAmount"),
+                                rs.getTimestamp("updatedAt").toInstant()))
+                        .list());
     }
 
     public void newBid(Bid bid) {
