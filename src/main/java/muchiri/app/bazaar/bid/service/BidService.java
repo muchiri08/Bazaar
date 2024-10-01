@@ -2,6 +2,7 @@ package muchiri.app.bazaar.bid.service;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jdbi.v3.core.Jdbi;
@@ -16,6 +17,14 @@ import muchiri.app.bazaar.bid.model.Bid;
 public class BidService {
     @Inject
     private Jdbi jdbi;
+
+    public List<Bid> getBidsForProduct(long productId) {
+        var query = """
+                SELECT id, bidderId, productId, bidAmount, updatedAt FROM bid
+                WHERE productId = :productId;
+                """;
+        return jdbi.withHandle(handle -> handle.createQuery(query).bind("productId", productId).mapToBean(Bid.class).list());
+    }
 
     public void newBid(Bid bid) {
         var query = """

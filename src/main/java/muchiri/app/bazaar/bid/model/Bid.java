@@ -3,12 +3,15 @@ package muchiri.app.bazaar.bid.model;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Bid {
     private long id;
     private long bidderId;
     private long productId;
     private BigDecimal bidAmount;
     private Instant updatedAt;
+    @JsonIgnore
     private short version;
 
     public long getId() {

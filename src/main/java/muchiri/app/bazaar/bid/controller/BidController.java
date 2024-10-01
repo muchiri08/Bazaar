@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -25,8 +26,15 @@ public class BidController {
     @Inject
     BidService bidService;
 
+    @GET
+    @Path("{id}")
+    public Response bidsForProduct(@PathParam("id") Long productId) {
+        var bids = bidService.getBidsForProduct(productId);
+        return Response.ok(bids).build();
+    }
+
     @POST
-    public Response neBid(@Valid BidResource bidResource) {
+    public Response newBid(@Valid BidResource bidResource) {
         var bid = BiddMapper.toBid(bidResource);
         bidService.newBid(bid);
         return Response.ok(new APIResponse(200, "success")).build();
