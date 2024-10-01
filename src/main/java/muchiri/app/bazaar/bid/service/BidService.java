@@ -1,6 +1,8 @@
 package muchiri.app.bazaar.bid.service;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.JdbiException;
@@ -32,6 +34,20 @@ public class BidService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public boolean rebid(long id, BigDecimal bidAmount) {
+        var query = """
+                UPDATE bid SET bidAmount = ?, updatedAt = NOW(), version = version + 1 WHERE id = ?
+                """;
+        var success = new AtomicBoolean(false);
+        jdbi.useHandle(handle -> {
+            var rows = handle.execute(query, bidAmount, id);
+            if (rows == 1) {
+                success.set(true);
+            }
+        });
+        return success.get();
     }
 
     private void handleForeignContraintViolation(Throwable e) {
