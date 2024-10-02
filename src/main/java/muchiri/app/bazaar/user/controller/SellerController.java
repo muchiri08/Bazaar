@@ -3,6 +3,7 @@ package muchiri.app.bazaar.user.controller;
 import java.util.concurrent.ExecutorService;
 
 import io.quarkus.virtual.threads.VirtualThreads;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -34,6 +35,7 @@ public class SellerController {
 
     @POST
     @Path("new")
+    @PermitAll
     public Response newSeller(@Valid Seller seller) {
         var newSeller = userService.newSeller(seller);
         var status = Status.ACCEPTED.getStatusCode();

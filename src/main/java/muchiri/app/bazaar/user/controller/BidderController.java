@@ -2,6 +2,7 @@ package muchiri.app.bazaar.user.controller;
 
 import java.util.concurrent.ExecutorService;
 import io.quarkus.virtual.threads.VirtualThreads;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -33,6 +34,7 @@ public class BidderController {
 
     @POST
     @Path("new")
+    @PermitAll
     public Response newBidder(@Valid Bidder bidder) {
         var newBidder = userService.newBidder(bidder);
         var status = Status.ACCEPTED.getStatusCode();

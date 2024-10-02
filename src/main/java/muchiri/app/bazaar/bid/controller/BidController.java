@@ -2,6 +2,8 @@ package muchiri.app.bazaar.bid.controller;
 
 import java.math.BigDecimal;
 
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -22,18 +24,21 @@ import muchiri.app.bazaar.bid.service.BidService;
 @Path("market/items/bid")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
+@DenyAll
 public class BidController {
     @Inject
     BidService bidService;
 
     @GET
     @Path("{id}")
+    @RolesAllowed(value = {"BIDDER", "SELLER"})
     public Response bidsForProduct(@PathParam("id") Long productId) {
         var bids = bidService.getBidsForProduct(productId);
         return Response.ok(bids).build();
     }
 
     @POST
+    @RolesAllowed(value = {"BIDDER"})
     public Response newBid(@Valid BidResource bidResource) {
         var bid = BiddMapper.toBid(bidResource);
         bidService.newBid(bid);
@@ -42,6 +47,7 @@ public class BidController {
 
     @POST
     @Path("re/{id}")
+    @RolesAllowed(value = {"BIDDER"})
     public Response rebid(@PathParam("id") Long id, @QueryParam("bidAmount") BigDecimal bidAmount) {
         if (bidAmount == null || bidAmount.compareTo(BigDecimal.ZERO) < 1) {
             return Response.status(Status.BAD_REQUEST)

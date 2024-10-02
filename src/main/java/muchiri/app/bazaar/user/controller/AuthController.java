@@ -2,6 +2,7 @@ package muchiri.app.bazaar.user.controller;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
@@ -20,6 +21,7 @@ import muchiri.app.bazaar.user.service.UserService;
 @Path("account")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
+@PermitAll
 public class AuthController {
     @ConfigProperty(name = "app.issuer")
     String issuer;
