@@ -4,7 +4,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -14,10 +13,11 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import muchiri.app.bazaar.APIResponse;
 import muchiri.app.bazaar.JWTUtil;
+import muchiri.app.bazaar.user.model.AuthResource;
 import muchiri.app.bazaar.user.service.TokenService;
 import muchiri.app.bazaar.user.service.UserService;
 
-@Path("")
+@Path("account")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthController {
@@ -29,15 +29,16 @@ public class AuthController {
     @Inject
     UserService userService;
 
-    @GET
+    @POST
     @Path("login")
-    public Response login() {
-        var token = JWTUtil.generateToken("kennedy", "ADMIN", issuer);
+    public Response login(AuthResource authResource) {
+        var role = userService.verify(authResource);
+        var token = JWTUtil.generateToken(authResource.username(), role, issuer);
         return Response.ok(token).build();
     }
 
     @POST
-    @Path("account/activate")
+    @Path("activate")
     public Response activate(@QueryParam(value = "token") String token) {
         if (token.isBlank()) {
             return Response.status(Status.BAD_REQUEST)

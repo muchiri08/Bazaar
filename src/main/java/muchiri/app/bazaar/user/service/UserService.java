@@ -6,9 +6,12 @@ import java.util.Optional;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.JdbiException;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import muchiri.app.bazaar.user.InvalidCredentialsException;
 import muchiri.app.bazaar.user.UserException;
+import muchiri.app.bazaar.user.model.AuthResource;
 import muchiri.app.bazaar.user.model.Bidder;
 import muchiri.app.bazaar.user.model.Role;
 import muchiri.app.bazaar.user.model.Seller;
@@ -18,6 +21,27 @@ import muchiri.app.bazaar.user.model.User;
 public class UserService {
     @Inject
     private Jdbi jdbi;
+
+    public Role verify(AuthResource authResource) {
+        var query = "SELECT passwordHash, role FROM appUser WHERE username = :username";
+        try (var handle = jdbi.open()) {
+            var userOptional = handle.createQuery(query)
+                    .bind("username", authResource.username())
+                    .map((rs, ctx) -> new AuthResource(null,
+                            rs.getString("passwordHash"),
+                            Role.valueOf(rs.getString("role"))))
+                    .findFirst();
+            if (userOptional.isEmpty()) {
+                throw new InvalidCredentialsException("invalid username or password");
+            }
+            var user = userOptional.get();
+            boolean match = BcryptUtil.matches(authResource.password(), user.password());
+            if (!match) {
+                throw new InvalidCredentialsException("invalid username or password");
+            }
+            return user.role();
+        }
+    }
 
     public Optional<Seller> getSellerById(long id) {
         if (id < 1) {
@@ -35,6 +59,8 @@ public class UserService {
 
     public Bidder newBidder(Bidder bidder) {
         bidder.setRole(Role.BIDDER);
+        var hashPwd = BcryptUtil.bcryptHash(bidder.getPassword());
+        bidder.setPassword(hashPwd);
         var query = """
                 INSERT INTO appUser(username, name, email, passwordHash, phone, role, activated, createdAt)
                 VALUES(:username, :name, :email, :password, :phone, :role, FALSE, NOW());
@@ -61,6 +87,8 @@ public class UserService {
 
     public Seller newSeller(Seller seller) {
         seller.setRole(Role.SELLER);
+        var hashPwd = BcryptUtil.bcryptHash(seller.getPassword());
+        seller.setPassword(hashPwd);
         var query = """
                 INSERT INTO appUser(username, name, email, passwordHash, phone, role, address,
                 activated, createdAt)
