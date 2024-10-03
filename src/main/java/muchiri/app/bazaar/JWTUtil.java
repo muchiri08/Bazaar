@@ -6,14 +6,15 @@ import java.time.Instant;
 import java.time.Duration;
 
 import io.smallrye.jwt.build.Jwt;
-import muchiri.app.bazaar.user.model.Role;
+import muchiri.app.bazaar.user.model.UserDTO;
 
 public interface JWTUtil {
 
-    static String generateToken(String username, Role role, String issuer) {
+    static String generateToken(UserDTO user, String issuer) {
         return Jwt.issuer(issuer)
-                .upn(username)
-                .groups(Set.of(role.name()))
+                .upn(user.username())
+                .groups(Set.of(user.role().name()))
+                .claim("uid", user.id())
                 .expiresAt(Instant.now().plus(Duration.ofDays(1)))
                 .sign();
     }

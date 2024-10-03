@@ -16,18 +16,20 @@ import muchiri.app.bazaar.user.model.Bidder;
 import muchiri.app.bazaar.user.model.Role;
 import muchiri.app.bazaar.user.model.Seller;
 import muchiri.app.bazaar.user.model.User;
+import muchiri.app.bazaar.user.model.UserDTO;
 
 @ApplicationScoped
 public class UserService {
     @Inject
     private Jdbi jdbi;
 
-    public Role verify(AuthResource authResource) {
-        var query = "SELECT passwordHash, role FROM appUser WHERE username = :username";
+    public UserDTO verify(AuthResource authResource) {
+        var query = "SELECT id, passwordHash, role FROM appUser WHERE username = :username";
         try (var handle = jdbi.open()) {
             var userOptional = handle.createQuery(query)
                     .bind("username", authResource.username())
-                    .map((rs, ctx) -> new AuthResource(null,
+                    .map((rs, ctx) -> new UserDTO(rs.getLong("id"),
+                            authResource.username(),
                             rs.getString("passwordHash"),
                             Role.valueOf(rs.getString("role"))))
                     .findFirst();
@@ -35,11 +37,11 @@ public class UserService {
                 throw new InvalidCredentialsException("invalid username or password");
             }
             var user = userOptional.get();
-            boolean match = BcryptUtil.matches(authResource.password(), user.password());
+            boolean match = BcryptUtil.matches(authResource.password(), user.passwordHash());
             if (!match) {
                 throw new InvalidCredentialsException("invalid username or password");
             }
-            return user.role();
+            return user;
         }
     }
 

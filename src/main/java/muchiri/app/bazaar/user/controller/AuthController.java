@@ -34,8 +34,8 @@ public class AuthController {
     @POST
     @Path("login")
     public Response login(AuthResource authResource) {
-        var role = userService.verify(authResource);
-        var token = JWTUtil.generateToken(authResource.username(), role, issuer);
+        var user = userService.verify(authResource);
+        var token = JWTUtil.generateToken(user, issuer);
         return Response.ok(token).build();
     }
 
