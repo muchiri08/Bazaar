@@ -1,5 +1,7 @@
 package muchiri.app.bazaar.product.controller;
 
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DefaultValue;
@@ -17,11 +19,13 @@ import muchiri.app.bazaar.product.service.ProductService;
 @Path("market/items")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
+@DenyAll
 public class MarketController {
     @Inject
     ProductService productService;
 
     @GET
+    @RolesAllowed({"SELLER", "BIDDER"})
     public Response getListedAndActiveProducts(@QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("pageSize") @DefaultValue("20") int pageSize) {
         var products = productService.getListedAndActiveProduct(page, pageSize);
@@ -30,6 +34,7 @@ public class MarketController {
 
     @POST
     @Path("{id}")
+    @RolesAllowed({"BIDDER"})
     public Response productStatusToPending(@PathParam("id") Long productId) {
         productService.statusToPending(productId);
         return Response.ok(new APIResponse(200, "success")).build();
@@ -37,6 +42,7 @@ public class MarketController {
 
     @GET
     @Path("pending")
+    @RolesAllowed({"SELLER", "BIDDER"})
     public Response getPendingProduct(@QueryParam("sellerId") Long sellerId) {
         var products = productService.getPendingProducts(sellerId);
         return Response.ok(products).build();
