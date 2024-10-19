@@ -46,3 +46,4 @@ nb-configuration.xml
 src/main/resources/.privateKey.pem
 src/main/resources/.publicKey.pem
 src/main/resources/.rsaPrivateKey.pem
+ui/node_modules/

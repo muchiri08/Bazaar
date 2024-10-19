@@ -1,0 +1,28 @@
+<header>
+    <div class="md:flex justify-between items-start">
+        <div class="inline-flex gap-1 items-center">
+            <button nz-button nzSize="small" (click)="open()" class="md:hidden">
+                <span nz-icon nzType="align-left" nzTheme="outline"></span>
+            </button>
+            <nz-drawer [nzClosable]="true" nzPlacement="left" (nzOnClose)="close()" [nzVisible]="visible">
+                <ng-container *nzDrawerContent class="w-2/4">
+                    <div class="flex flex-col gap-2">
+                        <a href="#">Home</a>
+                        <a href="#">MarketPlace</a>
+                        <a href="#">Seller</a>
+                    </div>
+                </ng-container>
+            </nz-drawer>
+            <h3 class="italic font-bold text-lg md:text-xl">Bazaar</h3>
+        </div>
+        <div class="flex hidden md:block text-center">
+            <a class="mr-5" href="#">Home</a>
+            <a class="mr-5" href="#">Marketplace</a>
+            <a class="mr-5" href="#">Seller</a>
+        </div>
+        <div class="inline-flex hidden md:block">
+            <button nz-button nzSize="small" nzShape="round" class="bg-blue-100 mr-2">Login</button>
+            <button nz-button nzType="default" nzShape="round" nzSize="small" class="bg-green-500 text-white">SignUp</button>
+        </div>
+    </div>
+</header>
